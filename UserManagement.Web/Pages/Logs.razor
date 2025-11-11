@@ -1,0 +1,49 @@
+@page "/logs"
+@using UserManagement.Models
+@using UserManagement.Services.Domain.Interfaces
+@inject ILogService LogService
+
+<h2 class="text-2xl font-bold mb-4">Activity Logs</h2>
+
+@if (logs == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (!logs.Any())
+{
+    <p>No logs available.</p>
+}
+else
+{
+    <table class="table-auto w-full border-collapse border border-gray-300">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="border px-4 py-2 text-left">User ID</th>
+                <th class="border px-4 py-2 text-left">Action</th>
+                <th class="border px-4 py-2 text-left">Description</th>
+                <th class="border px-4 py-2 text-left">Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in logs)
+            {
+                <tr>
+                    <td class="border px-4 py-2">@log.UserId</td>
+                    <td class="border px-4 py-2">@log.Action</td>
+                    <td class="border px-4 py-2">@log.Description</td>
+                    <td class="border px-4 py-2">@log.Timestamp.ToLocalTime()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<Log>? logs;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch all logs asynchronously
+        logs = await LogService.GetAllAsync();
+    }
+}
